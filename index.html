@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Processing</title>
+    <script>
+        async function processFile() {
+            const fileInput = document.getElementById("fileInput");
+            const fileType = document.getElementById("fileType").value;
+            const filePath = document.getElementById("filePath").value;
+            
+            let formData = {};
+            if (fileInput.files.length > 0) {
+                formData.file_path = fileInput.files[0].name; // Simulating file path
+            } else if (filePath) {
+                formData.file_path = filePath;
+            } else {
+                alert("Please provide a file or URL.");
+                return;
+            }
+            
+            formData.file_type = fileType;
+            
+            try {
+                const response = await fetch("http://localhost:5000/process", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json();
+                document.getElementById("output").innerText = JSON.stringify(result, null, 2);
+            } catch (error) {
+                console.error("Error processing file:", error);
+                alert("An error occurred. Check console for details.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Text Processing Interface</h1>
+    <label for="fileInput">Upload File:</label>
+    <input type="file" id="fileInput">
+    <br>
+    <label for="filePath">Or Enter File URL:</label>
+    <input type="text" id="filePath" placeholder="Enter file path or URL">
+    <br>
+    <label for="fileType">Select File Type:</label>
+    <select id="fileType">
+        <option value="csv">CSV</option>
+        <option value="json">JSON</option>
+        <option value="pdf">PDF</option>
+        <option value="html">HTML</option>
+    </select>
+    <br>
+    <button onclick="processFile()">Process</button>
+    <h2>Output:</h2>
+    <pre id="output"></pre>
+</body>
+</html>
